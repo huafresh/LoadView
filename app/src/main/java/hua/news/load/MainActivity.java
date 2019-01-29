@@ -1,7 +1,5 @@
 package hua.news.load;
 
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -22,17 +20,25 @@ public class MainActivity extends AppCompatActivity {
         //must call after setContentView
         multiLayout = MultiLayout.wrap(this);
 
-        multiLayout.setOnClickListener(R.id.error, new View.OnClickListener() {
+//        multiLayout.setChildOnClickListener(R.id.error, new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                startLoadData();
+//            }
+//        });
+
+        multiLayout.setChildOnClickListener(R.id.jump, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "jump baidu", Toast.LENGTH_SHORT).show();
                 startLoadData();
             }
         });
 
-        multiLayout.setOnClickListener(R.id.jump, new View.OnClickListener() {
+        multiLayout.setErrorOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "jump baidu", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "error", Toast.LENGTH_SHORT).show();
                 startLoadData();
             }
         });

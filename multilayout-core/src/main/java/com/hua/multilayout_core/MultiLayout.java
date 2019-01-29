@@ -5,13 +5,14 @@ import android.content.Context;
 import android.os.Looper;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
+import java.util.HashMap;
 
 /**
  * @author hua
@@ -25,7 +26,7 @@ public class MultiLayout extends FrameLayout {
     public static final int LAYOUT_TYPE_LOADING = 1001;
     public static final int LAYOUT_TYPE_ERROR = 1002;
     private SparseArray<View> cacheLayout = new SparseArray<>();
-    private SparseArray<OnClickListener> listenerInfo;
+    private HashMap<ClickTarget, OnClickListener> listenerInfo;
     private int type = -1;
 
     public MultiLayout(Context context) {
@@ -142,6 +143,7 @@ public class MultiLayout extends FrameLayout {
                 if (layout != null) {
                     removeAllViews();
                     addView(layout);
+                    cacheLayout.put(type, layout);
                     setupListener(layout);
                     MultiLayout.this.type = type;
                 }
@@ -161,25 +163,64 @@ public class MultiLayout extends FrameLayout {
         showWithType(-1);
     }
 
-    private void setupListener(View target) {
+    private void setupListener(View root) {
         if (listenerInfo != null) {
-            int size = listenerInfo.size();
-            for (int i = 0; i < size; i++) {
-                int id = listenerInfo.keyAt(i);
-                OnClickListener listener = listenerInfo.valueAt(i);
-                View child = target.findViewById(id);
-                if (child != null) {
-                    child.setOnClickListener(listener);
+            for (ClickTarget clickTarget : listenerInfo.keySet()) {
+                OnClickListener listener = listenerInfo.get(clickTarget);
+                if (clickTarget.childId != View.NO_ID) {
+                    View child = root.findViewById(clickTarget.childId);
+                    if (child != null) {
+                        child.setOnClickListener(listener);
+                    }
+                } else if (clickTarget.type != -1) {
+                    View layout = cacheLayout.get(clickTarget.type);
+                    if (layout == root) {
+                        root.setOnClickListener(listener);
+                    }
                 }
             }
         }
     }
 
-    public void setOnClickListener(@IdRes int id, OnClickListener listener) {
+    public void setChildOnClickListener(@IdRes int id, OnClickListener listener) {
         if (listenerInfo == null) {
-            listenerInfo = new SparseArray<>();
+            listenerInfo = new HashMap<>();
         }
-        listenerInfo.put(id, listener);
+        ClickTarget clickTarget = new ClickTarget();
+        clickTarget.childId = id;
+        listenerInfo.put(clickTarget, listener);
+    }
+
+    public void setErrorOnClickListener(OnClickListener listener) {
+        setLayoutOnClickListener(LAYOUT_TYPE_ERROR, listener);
+    }
+
+    public void setLayoutOnClickListener(int type, OnClickListener listener) {
+        if (type < 0) {
+            throw new IllegalArgumentException("type must be positive");
+        }
+        if (listenerInfo == null) {
+            listenerInfo = new HashMap<>();
+        }
+        ClickTarget clickTarget = new ClickTarget();
+        clickTarget.type = type;
+        listenerInfo.put(clickTarget, listener);
+    }
+
+    static class ClickTarget {
+        @IdRes
+        int childId = View.NO_ID;
+        int type = -1;
+
+        @Override
+        public int hashCode() {
+            return super.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return super.equals(obj);
+        }
     }
 
 }

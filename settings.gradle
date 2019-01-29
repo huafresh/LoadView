@@ -1,1 +1,1 @@
-include ':app', ':loadmanager'
+include ':app', ':multilayout-core'

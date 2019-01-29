@@ -1,4 +1,4 @@
-package com.hua.loadview;
+package com.hua.multilayout_core;
 
 import android.util.Log;
 import android.view.View;

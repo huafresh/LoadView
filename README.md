@@ -30,4 +30,13 @@ multiLayout.showError();
 multiLayout.showContent(); // 展示被包装的原始内容视图
 multiLayout.showWithType(1); // 展示自定义类型的视图
 ```
+step4: 一般加载失败页面会有重试按钮，可以这样设置点击事件：
+```
+// 设置某个类型视图顶层的点击事件
+public void setLayoutOnClickListener(int type, listener);
+// 设置某个child子视图的点击事件，第一个参数是child view的id
+multiLayout.setChildOnClickListener(R.id.jump, listener);
+```
+## 鸣谢
+部分设计思想来源于此库： [https://github.com/KingJA/LoadSir](https://github.com/KingJA/LoadSir)
 
